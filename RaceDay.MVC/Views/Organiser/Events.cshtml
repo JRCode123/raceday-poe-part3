@@ -1,0 +1,149 @@
+@model List<RaceDay.MVC.Models.EventListItem>
+@{ ViewData["Title"] = "My Events"; }
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold mb-0">
+            <i class="fas fa-calendar-check me-2 text-primary"></i>My Events
+        </h1>
+        <a asp-controller="Organiser" asp-action="CreateEvent" class="btn rd-btn-primary">
+            <i class="fas fa-plus me-2"></i>Create Event
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 bg-light text-center py-5">
+            <i class="fas fa-calendar-plus fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No events yet</h4>
+            <p class="text-muted mb-3">Create your first RaceDay event to get started.</p>
+            <a asp-controller="Organiser" asp-action="CreateEvent" class="btn rd-btn-primary">
+                <i class="fas fa-plus me-2"></i>Create Event
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Sport / Category</th>
+                        <th>Entry Fee</th>
+                        <th>Enrolled</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ev in Model.OrderBy(e => e.EventDate))
+                    {
+                        <tr class="@(!ev.IsActive ? "table-secondary" : "")">
+                            <td>
+                                <strong>@ev.Name</strong>
+                                @if (!string.IsNullOrEmpty(ev.BannerImageUrl))
+                                {
+                                    <i class="fas fa-image text-primary ms-1" title="Has banner image"></i>
+                                }
+                            </td>
+                            <td class="text-nowrap">@ev.EventDate <small class="text-muted">@ev.StartTime</small></td>
+                            <td>@ev.Location</td>
+                            <td>
+                                <span class="badge @(ev.Category?.Sport == "Cycling" ? "bg-success" : ev.Category?.Sport == "Walking" ? "bg-warning text-dark" : "bg-primary") me-1">
+                                    @ev.Category?.Sport
+                                </span>
+                                @ev.Category?.Name
+                            </td>
+                            <td>@(ev.EntryFee == 0 ? "Free" : $"R{ev.EntryFee:F2}")</td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    @ev.EnrolmentCount / @ev.MaxParticipants
+                                </span>
+                            </td>
+                            <td>
+                                @if (ev.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td class="text-nowrap">
+                                <a asp-controller="Organiser" asp-action="EditEvent"
+                                   asp-route-id="@ev.EventId"
+                                   class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a asp-controller="Organiser" asp-action="Enrolments"
+                                   asp-route-id="@ev.EventId"
+                                   class="btn btn-sm btn-outline-info me-1" title="View enrolments">
+                                    <i class="fas fa-users"></i>
+                                </a>
+                                <a asp-controller="Organiser" asp-action="Results"
+                                   asp-route-id="@ev.EventId"
+                                   class="btn btn-sm btn-outline-success me-1" title="Results">
+                                    <i class="fas fa-trophy"></i>
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        title="Delete event"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-event-id="@ev.EventId"
+                                        data-event-name="@ev.Name">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Delete Event
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="deleteEventName"></strong>?
+                <p class="text-danger small mt-2 mb-0">
+                    This will also remove all enrolments and results. This cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" asp-controller="Organiser" asp-action="DeleteEvent" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteEventId" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', event => {
+        const btn = event.relatedTarget;
+        document.getElementById('deleteEventName').textContent = btn.dataset.eventName;
+        document.getElementById('deleteEventId').value = btn.dataset.eventId;
+    });
+</script>
+}

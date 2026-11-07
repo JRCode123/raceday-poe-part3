@@ -1,0 +1,181 @@
+@model RaceDay.MVC.Models.EventDetailViewModel
+@{ ViewData["Title"] = Model.Name; }
+
+<div class="container py-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fas fa-arrow-left me-1"></i>Back to Events
+    </a>
+
+    @if (!string.IsNullOrEmpty(Model.BannerImageUrl))
+    {
+        <img src="@Model.BannerImageUrl" alt="@Model.Name banner"
+             class="img-fluid rounded-3 mb-4 w-100" style="max-height:350px;object-fit:cover;" />
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="badge fs-6 @(Model.Category?.Sport == "Cycling" ? "bg-success" : Model.Category?.Sport == "Walking" ? "bg-warning text-dark" : "bg-primary")">
+                    <i class="fas @(Model.Category?.Sport == "Cycling" ? "fa-biking" : Model.Category?.Sport == "Walking" ? "fa-walking" : "fa-running") me-1"></i>
+                    @Model.Category?.Sport
+                </span>
+                @if (!Model.IsActive)
+                {
+                    <span class="badge bg-danger fs-6">Event Closed</span>
+                }
+            </div>
+
+            <h1 class="fw-bold">@Model.Name</h1>
+
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <p class="lead text-muted">@Model.Description</p>
+            }
+
+            <hr />
+
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6">
+                    <div class="rd-info-box">
+                        <i class="fas fa-calendar-alt fa-lg text-primary me-2"></i>
+                        <div>
+                            <div class="small text-muted">Date</div>
+                            <strong>@Model.EventDate</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="rd-info-box">
+                        <i class="fas fa-clock fa-lg text-primary me-2"></i>
+                        <div>
+                            <div class="small text-muted">Start Time</div>
+                            <strong>@Model.StartTime</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="rd-info-box">
+                        <i class="fas fa-map-marker-alt fa-lg text-danger me-2"></i>
+                        <div>
+                            <div class="small text-muted">Location</div>
+                            <strong>@Model.Location</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="rd-info-box">
+                        <i class="fas fa-users fa-lg text-info me-2"></i>
+                        <div>
+                            <div class="small text-muted">Spots</div>
+                            <strong>@Model.EnrolmentCount / @Model.MaxParticipants enrolled</strong>
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Route))
+                {
+                    <div class="col-12">
+                        <div class="rd-info-box">
+                            <i class="fas fa-route fa-lg text-success me-2"></i>
+                            <div>
+                                <div class="small text-muted">Route</div>
+                                <strong>@Model.Route</strong>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Category != null)
+            {
+                <div class="card border-0 bg-light mb-4">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-1">
+                            <i class="fas fa-tag me-2 text-primary"></i>Category: @Model.Category.Name
+                        </h5>
+                        @if (!string.IsNullOrEmpty(Model.Category.Description))
+                        {
+                            <p class="text-muted mb-0">@Model.Category.Description</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- SIDEBAR: Entry info + Enrol button -->
+        <div class="col-lg-4">
+            <div class="card rd-sidebar-card">
+                <div class="card-body text-center">
+                    <div class="display-6 fw-bold text-primary mb-1">
+                        @(Model.EntryFee == 0 ? "FREE" : $"R{Model.EntryFee:F2}")
+                    </div>
+                    <p class="text-muted small mb-3">Entry fee</p>
+
+                    @{
+                        var role = Context.Session.GetString("UserRole");
+                        var isLoggedIn = Context.Session.GetString("UserId") != null;
+                    }
+
+                    @if (!Model.IsActive)
+                    {
+                        <div class="alert alert-secondary">Event is closed for entries.</div>
+                    }
+                    else if (!isLoggedIn)
+                    {
+                        <a asp-controller="Account" asp-action="Login"
+                           asp-route-returnUrl="@Context.Request.Path"
+                           class="btn rd-btn-primary w-100 btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Log in to Enter
+                        </a>
+                        <p class="text-muted small mt-2">
+                            Don't have an account?
+                            <a asp-controller="Account" asp-action="Register">Register free</a>
+                        </p>
+                    }
+                    else if (role == "Participant")
+                    {
+                        @if (Model.AlreadyEnrolled)
+                        {
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>You're entered!
+                            </div>
+                            <a asp-controller="Participant" asp-action="MyEnrolments"
+                               class="btn btn-outline-success w-100">View My Entries</a>
+                        }
+                        else
+                        {
+                            <form asp-controller="Participant" asp-action="Enrol"
+                                  asp-route-id="@Model.EventId" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn rd-btn-primary w-100 btn-lg">
+                                    <i class="fas fa-ticket-alt me-2"></i>Enter Now
+                                </button>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <div class="alert alert-info small">
+                            Organisers cannot enrol in events.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (Model.Organiser != null)
+            {
+                <div class="card mt-3 border-0 bg-light">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-2"><i class="fas fa-building me-2"></i>Organised by</h6>
+                        <p class="mb-1">@Model.Organiser.Organisation</p>
+                        @if (!string.IsNullOrEmpty(Model.Organiser.ContactPhone))
+                        {
+                            <p class="text-muted small mb-0">
+                                <i class="fas fa-phone me-1"></i>@Model.Organiser.ContactPhone
+                            </p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,126 @@
+@model RaceDay.MVC.Models.EventEnrolmentsViewModel
+@{ ViewData["Title"] = $"Enrolments – {Model.EventName}"; }
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Organiser" asp-action="Events">My Events</a></li>
+            <li class="breadcrumb-item active">Enrolments</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-users me-2 text-primary"></i>Enrolments
+            </h2>
+            <p class="text-muted mb-0">@Model.EventName</p>
+        </div>
+        <div class="d-flex gap-2">
+            <span class="badge bg-info text-dark fs-6 py-2 px-3">
+                @Model.TotalEnrolments enrolled
+            </span>
+            <a asp-controller="Organiser" asp-action="Results"
+               asp-route-id="@Model.EventId"
+               class="btn rd-btn-primary">
+                <i class="fas fa-trophy me-2"></i>Enter Results
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Enrolments.Any())
+    {
+        <div class="alert alert-info text-center py-4">
+            <i class="fas fa-user-slash fa-2x mb-2 d-block"></i>
+            No participants have enrolled in this event yet.
+        </div>
+    }
+    else
+    {
+        <!-- Summary badges -->
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-success py-2 px-3">
+                <i class="fas fa-check me-1"></i>
+                @Model.Enrolments.Count(e => e.Status == "Confirmed") Confirmed
+            </span>
+            <span class="badge bg-warning text-dark py-2 px-3">
+                <i class="fas fa-clock me-1"></i>
+                @Model.Enrolments.Count(e => e.Status == "Waitlisted") Waitlisted
+            </span>
+            <span class="badge bg-secondary py-2 px-3">
+                <i class="fas fa-times me-1"></i>
+                @Model.Enrolments.Count(e => e.Status == "Cancelled") Cancelled
+            </span>
+            <span class="badge bg-primary py-2 px-3">
+                <i class="fas fa-trophy me-1"></i>
+                @Model.Enrolments.Count(e => e.HasResult) Results captured
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Participant</th>
+                        <th>Email</th>
+                        <th>Enrolled</th>
+                        <th>Status</th>
+                        <th>Finish Time</th>
+                        <th>Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int row = 1;}
+                    @foreach (var e in Model.Enrolments.OrderBy(x => x.EnrolledAt))
+                    {
+                        <tr>
+                            <td class="text-muted small">@row++</td>
+                            <td><strong>@e.ParticipantName</strong></td>
+                            <td class="text-muted small">@e.ParticipantEmail</td>
+                            <td class="text-muted small text-nowrap">
+                                @e.EnrolledAt.ToString("dd MMM yyyy HH:mm")
+                            </td>
+                            <td>
+                                @{
+                                    var statusClass = e.Status switch
+                                    {
+                                        "Confirmed"  => "bg-success",
+                                        "Waitlisted" => "bg-warning text-dark",
+                                        "Cancelled"  => "bg-secondary",
+                                        _            => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @statusClass">@e.Status</span>
+                            </td>
+                            <td>
+                                @if (e.HasResult && e.FinishTime != null)
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-clock me-1"></i>@e.FinishTime
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (e.HasResult && e.Position.HasValue)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        @e.Position.Value<sup>th</sup>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -30,6 +30,9 @@ public class Participant
     [MaxLength(100)]
     public string? EmergencyContact { get; set; }
 
+    [MaxLength(500)]
+    public string? ProfilePictureUrl { get; set; }
+
     // Navigation properties
     [ForeignKey(nameof(UserID))]
     public User? User { get; set; }

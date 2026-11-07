@@ -1,0 +1,129 @@
+@model RaceDay.MVC.Models.EventEnrolmentsViewModel
+@{ ViewData["Title"] = $"Results – {Model.EventName}"; }
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Organiser" asp-action="Events">My Events</a></li>
+            <li class="breadcrumb-item">
+                <a asp-controller="Organiser" asp-action="Enrolments" asp-route-id="@Model.EventId">Enrolments</a>
+            </li>
+            <li class="breadcrumb-item active">Results</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-trophy me-2 text-warning"></i>Capture Results
+            </h2>
+            <p class="text-muted mb-0">@Model.EventName</p>
+        </div>
+        <span class="badge bg-info text-dark fs-6 py-2 px-3">
+            @Model.TotalEnrolments participants
+        </span>
+    </div>
+
+    @if (!Model.Enrolments.Any())
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            No enrolments found for this event.
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Participant</th>
+                                <th>Status</th>
+                                <th>Current Result</th>
+                                <th style="width:320px;">Capture Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in Model.Enrolments.Where(x => x.Status == "Confirmed"))
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@e.ParticipantName</strong>
+                                        <div class="text-muted small">@e.ParticipantEmail</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">@e.Status</span>
+                                    </td>
+                                    <td>
+                                        @if (e.HasResult)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-clock me-1"></i>@e.FinishTime
+                                            </span>
+                                            if (e.Position.HasValue)
+                                            {
+                                                <span class="badge bg-primary ms-1">
+                                                    #@e.Position
+                                                </span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Not recorded</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!e.HasResult)
+                                        {
+                                            <form asp-controller="Organiser" asp-action="CaptureResult"
+                                                  asp-route-eventId="@Model.EventId" method="post"
+                                                  class="d-flex gap-2 align-items-center">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="EnrolmentID" value="@e.EnrolmentId" />
+                                                <input type="hidden" name="ParticipantName" value="@e.ParticipantName" />
+
+                                                <input type="text" name="FinishTime"
+                                                       class="form-control form-control-sm"
+                                                       placeholder="H:MM:SS"
+                                                       pattern="^\d+:[0-5]\d:[0-5]\d$"
+                                                       title="Format: H:MM:SS e.g. 2:45:30"
+                                                       style="width:100px;" required />
+
+                                                <input type="number" name="Position"
+                                                       class="form-control form-control-sm"
+                                                       placeholder="Pos."
+                                                       min="1" style="width:70px;" />
+
+                                                <button type="submit" class="btn btn-sm btn-success text-nowrap">
+                                                    <i class="fas fa-check me-1"></i>Save
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success small">
+                                                <i class="fas fa-check-circle me-1"></i>Recorded
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Model.Enrolments.Any(x => x.Status == "Waitlisted"))
+                            {
+                                <tr class="table-warning">
+                                    <td colspan="4" class="text-center small fw-semibold">
+                                        <i class="fas fa-clock me-2"></i>
+                                        Waitlisted participants (@Model.Enrolments.Count(x => x.Status == "Waitlisted")) — results not captured for waitlisted entries
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

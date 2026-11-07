@@ -1,0 +1,111 @@
+@model List<RaceDay.MVC.Models.MyResultItem>
+@{ ViewData["Title"] = "My Results"; }
+
+<div class="container py-4">
+    <h1 class="fw-bold mb-4">
+        <i class="fas fa-trophy me-2 text-warning"></i>My Race History
+    </h1>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 bg-light text-center py-5">
+            <i class="fas fa-medal fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No results yet</h4>
+            <p class="text-muted mb-3">
+                Results are recorded by the event organiser after the race concludes.
+                Complete an event to see your times here.
+            </p>
+            <a asp-controller="Participant" asp-action="Events" class="btn rd-btn-primary">
+                <i class="fas fa-search me-2"></i>Find an Event
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- Summary stats -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-4">
+                <div class="card border-0 bg-primary bg-opacity-10 text-center p-3">
+                    <div class="display-5 fw-bold text-primary">@Model.Count</div>
+                    <div class="small text-muted">Races completed</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card border-0 bg-warning bg-opacity-10 text-center p-3">
+                    <div class="display-5 fw-bold text-warning">
+                        @(Model.Any(r => r.Position.HasValue)
+                            ? Model.Where(r => r.Position.HasValue).Min(r => r.Position)?.ToString()
+                            : "—")
+                    </div>
+                    <div class="small text-muted">Best position</div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="card border-0 bg-success bg-opacity-10 text-center p-3">
+                    <div class="display-5 fw-bold text-success">
+                        @Model.Select(r => r.Sport).Distinct().Count()
+                    </div>
+                    <div class="small text-muted">Different sports</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Sport / Category</th>
+                        <th>Finish Time</th>
+                        <th>Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td><strong>@r.EventName</strong></td>
+                            <td class="text-nowrap">
+                                <i class="fas fa-calendar me-1 text-muted"></i>@r.EventDate
+                            </td>
+                            <td><i class="fas fa-map-marker-alt me-1 text-muted"></i>@r.Location</td>
+                            <td>
+                                <span class="badge @(r.Sport == "Cycling" ? "bg-success" : r.Sport == "Walking" ? "bg-warning text-dark" : "bg-primary") me-1">
+                                    @r.Sport
+                                </span>
+                                @r.Category
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    <i class="fas fa-clock me-1"></i>@r.FinishTime
+                                </span>
+                            </td>
+                            <td>
+                                @if (r.Position.HasValue)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        @r.Position<sup>th</sup>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.FirstOrDefault()?.Notes))
+        {
+            <div class="alert alert-secondary small mt-3">
+                <i class="fas fa-sticky-note me-2"></i>
+                Notes: @Model.First().Notes
+            </div>
+        }
+    }
+</div>

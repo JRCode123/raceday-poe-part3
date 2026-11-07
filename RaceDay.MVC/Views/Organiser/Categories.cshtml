@@ -1,0 +1,154 @@
+@model List<RaceDay.MVC.Models.CategoryListItem>
+@{ ViewData["Title"] = "Categories"; }
+
+<div class="container py-4">
+    <div class="row g-4">
+
+        <!-- Category list -->
+        <div class="col-lg-8">
+            <h2 class="fw-bold mb-4">
+                <i class="fas fa-tags me-2 text-primary"></i>Event Categories
+            </h2>
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No categories yet. Create your first category on the right.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Sport</th>
+                                <th>Description</th>
+                                <th>Events</th>
+                                <th>Organiser</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cat in Model)
+                            {
+                                <tr>
+                                    <td><strong>@cat.Name</strong></td>
+                                    <td>
+                                        <span class="badge @(cat.Sport == "Cycling" ? "bg-success" : cat.Sport == "Walking" ? "bg-warning text-dark" : "bg-primary")">
+                                            @cat.Sport
+                                        </span>
+                                    </td>
+                                    <td class="text-muted small">
+                                        @(cat.Description?.Length > 60
+                                            ? cat.Description[..60] + "…"
+                                            : cat.Description ?? "—")
+                                    </td>
+                                    <td><span class="badge bg-info text-dark">@cat.EventCount</span></td>
+                                    <td class="small text-muted">@cat.Organiser</td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteCatModal"
+                                                data-cat-id="@cat.CategoryId"
+                                                data-cat-name="@cat.Name"
+                                                data-event-count="@cat.EventCount">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <!-- Create category form -->
+        <div class="col-lg-4">
+            <div class="card border-0 bg-light sticky-top" style="top:80px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-plus-circle me-2 text-primary"></i>New Category
+                    </h5>
+
+                    <form asp-controller="Organiser" asp-action="CreateCategory" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Category Name <span class="text-danger">*</span></label>
+                            <input name="Name" class="form-control" required maxlength="100"
+                                   placeholder="e.g. 10km Road Run" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Sport <span class="text-danger">*</span></label>
+                            <select name="Sport" class="form-select" required>
+                                <option value="Running">🏃 Running</option>
+                                <option value="Cycling">🚴 Cycling</option>
+                                <option value="Walking">🚶 Walking</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea name="Description" class="form-control" rows="2"
+                                      placeholder="Optional details about this category..." maxlength="500"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn rd-btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Create Category
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete category modal -->
+<div class="modal fade" id="deleteCatModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Delete Category
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Delete category <strong id="deleteCatName"></strong>?</p>
+                <div id="deleteCatWarning" class="alert alert-warning small" style="display:none;">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    This category still has events linked to it and cannot be deleted.
+                    Remove or reassign those events first.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteCatForm" asp-controller="Organiser" asp-action="DeleteCategory" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteCatId" />
+                    <button type="submit" class="btn btn-danger" id="deleteCatBtn">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const catModal = document.getElementById('deleteCatModal');
+    catModal.addEventListener('show.bs.modal', event => {
+        const btn = event.relatedTarget;
+        document.getElementById('deleteCatName').textContent = btn.dataset.catName;
+        document.getElementById('deleteCatId').value = btn.dataset.catId;
+        const hasEvents = parseInt(btn.dataset.eventCount) > 0;
+        document.getElementById('deleteCatWarning').style.display = hasEvents ? 'block' : 'none';
+        document.getElementById('deleteCatBtn').disabled = hasEvents;
+    });
+</script>
+}

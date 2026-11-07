@@ -7,12 +7,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using RaceDay.API.Data;
+using RaceDay.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Database: Entity Framework Core (Code-First, SQL Server) ──────────────
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddSingleton<BlobStorageService>();
 
 // ── Session: server-side session stores UserId and Role ───────────────────
 // The session cookie is sent with every request once the user logs in.

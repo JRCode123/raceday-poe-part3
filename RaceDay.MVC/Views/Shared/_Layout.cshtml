@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " | " : "")RaceDay</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <!-- RaceDay custom styles -->
+    <link rel="stylesheet" href="~/css/raceday.css" asp-append-version="true" />
+</head>
+<body>
+
+<!-- ═══ TOP NAVBAR ══════════════════════════════════════════════════════════ -->
+<nav class="navbar navbar-expand-lg navbar-dark rd-navbar">
+    <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand rd-brand" asp-controller="Home" asp-action="Index">
+            <i class="fas fa-flag-checkered me-2"></i>RaceDay
+        </a>
+
+        <!-- Mobile toggle -->
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+
+            @{
+                var role     = Context.Session.GetString("UserRole");
+                var userName = Context.Session.GetString("UserName");
+                var isLoggedIn = !string.IsNullOrEmpty(Context.Session.GetString("UserId"));
+            }
+
+            <!-- Left nav links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @if (!isLoggedIn || role == "Participant")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Participant" asp-action="Events">
+                            <i class="fas fa-calendar-alt me-1"></i>Browse Events
+                        </a>
+                    </li>
+                }
+
+                @if (isLoggedIn && role == "Organiser")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Events">
+                            <i class="fas fa-calendar-check me-1"></i>My Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Organiser" asp-action="Categories">
+                            <i class="fas fa-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                }
+
+                @if (isLoggedIn && role == "Participant")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Participant" asp-action="MyEnrolments">
+                            <i class="fas fa-ticket-alt me-1"></i>My Entries
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Participant" asp-action="MyResults">
+                            <i class="fas fa-trophy me-1"></i>My Results
+                        </a>
+                    </li>
+                }
+            </ul>
+
+            <!-- Right: user menu -->
+            <ul class="navbar-nav">
+                @if (isLoggedIn)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle rd-user-pill" href="#"
+                           role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>@userName
+                            <span class="badge ms-1 @(role == "Organiser" ? "bg-warning text-dark" : "bg-info text-dark")">
+                                @role
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end rd-dropdown">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
+                                    <i class="fas fa-id-card me-2"></i>My Profile
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn rd-btn-primary ms-2" asp-controller="Account" asp-action="Register">
+                            Register
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ═══ FLASH MESSAGES ══════════════════════════════════════════════════════ -->
+<div class="container mt-3">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+</div>
+
+<!-- ═══ PAGE CONTENT ════════════════════════════════════════════════════════ -->
+<main class="rd-main">
+    @RenderBody()
+</main>
+
+<!-- ═══ FOOTER ══════════════════════════════════════════════════════════════ -->
+<footer class="rd-footer mt-auto py-4">
+    <div class="container text-center">
+        <p class="mb-1">
+            <i class="fas fa-flag-checkered me-1"></i>
+            <strong>RaceDay</strong> — South African Road Running, Walking &amp; Cycling Events
+        </p>
+        <small class="text-muted">
+            &copy; @DateTime.Now.Year RaceDay | Portfolio of Evidence — Part 3
+        </small>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,5 @@
+@model RaceDay.MVC.Models.EventDetailViewModel
+@{ ViewData["Title"] = Model.Name; }
+
+<!-- Reuse the same layout as Home/EventDetails but accessed via Participant controller -->
+@await Html.PartialAsync("~/Views/Home/EventDetails.cshtml", Model)

@@ -55,6 +55,9 @@ public class RaceEvent
     /// </summary>
     public bool IsActive { get; set; } = true;
 
+    [MaxLength(500)]
+    public string? BannerImageUrl { get; set; }
+
     // Navigation properties
     [ForeignKey(nameof(OrganiserID))]
     public Organiser? Organiser { get; set; }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\junio\\Downloads\\raceday-part2\\RaceDay.API\\RaceDay.API.csproj": {}
+    "C:\\Users\\junio\\Documents\\NetBeansProjects\\chatAppPart1\\raceday-poe-part2\\RaceDay.API\\RaceDay.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\junio\\Downloads\\raceday-part2\\RaceDay.API\\RaceDay.API.csproj": {
+    "C:\\Users\\junio\\Documents\\NetBeansProjects\\chatAppPart1\\raceday-poe-part2\\RaceDay.API\\RaceDay.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\junio\\Downloads\\raceday-part2\\RaceDay.API\\RaceDay.API.csproj",
+        "projectUniqueName": "C:\\Users\\junio\\Documents\\NetBeansProjects\\chatAppPart1\\raceday-poe-part2\\RaceDay.API\\RaceDay.API.csproj",
         "projectName": "RaceDay.API",
-        "projectPath": "C:\\Users\\junio\\Downloads\\raceday-part2\\RaceDay.API\\RaceDay.API.csproj",
+        "projectPath": "C:\\Users\\junio\\Documents\\NetBeansProjects\\chatAppPart1\\raceday-poe-part2\\RaceDay.API\\RaceDay.API.csproj",
         "packagesPath": "C:\\Users\\junio\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\junio\\Downloads\\raceday-part2\\RaceDay.API\\obj\\",
+        "outputPath": "C:\\Users\\junio\\Documents\\NetBeansProjects\\chatAppPart1\\raceday-poe-part2\\RaceDay.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -51,6 +51,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.19.1, )"
+            },
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"

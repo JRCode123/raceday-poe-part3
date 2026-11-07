@@ -1,0 +1,243 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   RaceDay Custom Styles — Part 3
+   Brand palette: dark navy background, orange primary, clean whites
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --rd-primary:    #e85d04;    /* energetic orange */
+    --rd-primary-dk: #c44f03;
+    --rd-dark:       #0d1117;    /* deep dark navy */
+    --rd-dark-2:     #161b22;
+    --rd-accent:     #ffd60a;    /* yellow accent */
+    --rd-text-muted: #8b949e;
+    --rd-radius:     12px;
+    --rd-transition: .2s ease;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────── */
+body {
+    background: #f8f9fa;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ── Navbar ────────────────────────────────────────────────────────────── */
+.rd-navbar {
+    background: var(--rd-dark) !important;
+    border-bottom: 3px solid var(--rd-primary);
+    box-shadow: 0 2px 12px rgba(0,0,0,.4);
+    padding: .75rem 0;
+}
+
+.rd-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    color: #fff !important;
+    text-transform: uppercase;
+}
+
+.rd-brand:hover { color: var(--rd-primary) !important; }
+
+.rd-navbar .nav-link {
+    color: rgba(255,255,255,.8) !important;
+    font-weight: 500;
+    padding: .5rem .9rem;
+    border-radius: 8px;
+    transition: var(--rd-transition);
+}
+
+.rd-navbar .nav-link:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,.08);
+}
+
+.rd-user-pill {
+    color: rgba(255,255,255,.9) !important;
+    font-weight: 600 !important;
+}
+
+.rd-dropdown {
+    border: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.15);
+    border-radius: 10px;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.rd-btn-primary {
+    background: var(--rd-primary);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: .5rem 1.2rem;
+    transition: var(--rd-transition);
+}
+
+.rd-btn-primary:hover, .rd-btn-primary:focus {
+    background: var(--rd-primary-dk);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(232,93,4,.35);
+}
+
+/* ── Hero section ──────────────────────────────────────────────────────── */
+.rd-hero {
+    background: linear-gradient(135deg, var(--rd-dark) 0%, #1a2535 60%, #0d2137 100%);
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.rd-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+/* ── Page header (Organiser pages) ─────────────────────────────────────── */
+.rd-page-header {
+    background: linear-gradient(135deg, var(--rd-dark) 0%, #1e2a3a 100%);
+    border-radius: var(--rd-radius);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--rd-primary);
+}
+
+/* ── Stat cards ────────────────────────────────────────────────────────── */
+.rd-stat-card {
+    border-radius: var(--rd-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+    transition: var(--rd-transition);
+}
+
+.rd-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+}
+
+.rd-stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── Event cards ───────────────────────────────────────────────────────── */
+.rd-event-card {
+    border: none;
+    border-radius: var(--rd-radius);
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    transition: var(--rd-transition);
+    overflow: hidden;
+}
+
+.rd-event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(0,0,0,.12);
+}
+
+.rd-event-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.rd-event-img-placeholder {
+    height: 180px;
+    background: linear-gradient(135deg, #1a2535, #0d2137);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Sport filter cards ────────────────────────────────────────────────── */
+.rd-sport-card {
+    border-radius: var(--rd-radius);
+    transition: var(--rd-transition);
+    border: 2px solid transparent;
+}
+
+.rd-sport-card:hover {
+    border-color: var(--rd-primary);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.1);
+}
+
+/* ── Info boxes (event detail) ─────────────────────────────────────────── */
+.rd-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+/* ── Sidebar card ──────────────────────────────────────────────────────── */
+.rd-sidebar-card {
+    border-radius: var(--rd-radius);
+    border: 2px solid #e9ecef;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+
+/* ── Avatar placeholder ────────────────────────────────────────────────── */
+.rd-avatar-placeholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--rd-dark);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 3px solid var(--rd-primary);
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+.table th {
+    font-weight: 600;
+    font-size: .875rem;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+.table td { vertical-align: middle; }
+
+/* ── Footer ────────────────────────────────────────────────────────────── */
+.rd-footer {
+    background: var(--rd-dark);
+    color: rgba(255,255,255,.7);
+    margin-top: auto;
+    border-top: 3px solid var(--rd-primary);
+}
+
+/* ── Main content ──────────────────────────────────────────────────────── */
+.rd-main {
+    flex: 1;
+}
+
+/* ── Status badge helpers ──────────────────────────────────────────────── */
+.status-confirmed  { --bs-badge-bg: #198754; }   /* Bootstrap green */
+.status-waitlisted { --bs-badge-bg: #ffc107; }   /* Bootstrap amber */
+.status-cancelled  { --bs-badge-bg: #6c757d; }   /* Bootstrap grey */
+
+/* ── Form controls ─────────────────────────────────────────────────────── */
+.form-control:focus, .form-select:focus {
+    border-color: var(--rd-primary);
+    box-shadow: 0 0 0 .25rem rgba(232,93,4,.2);
+}
+
+/* ── Responsive tweaks ─────────────────────────────────────────────────── */
+@media (max-width: 576px) {
+    .rd-hero { padding: 2.5rem 0; }
+    .rd-page-header { padding: 1rem 1.25rem; }
+}
