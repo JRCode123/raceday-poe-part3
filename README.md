@@ -89,7 +89,7 @@
 ### Run the MVC app in Docker
 
 > The Part 2 API must already be running (locally or in its own container).
-> Replace `YOUR_API_URL` with the actual API address reachable from the container.
+> Replace `https://localhost:55293/` with the actual API address reachable from the container.
 
 ```bash
 docker build -t raceday-mvc ./RaceDay.MVC
@@ -153,7 +153,8 @@ To enable this feature:
 
 ## 🔄 CI/CD Screenshot
 
-> *(Add screenshot of green GitHub Actions build here)*
+> *(<img width="1907" height="581" alt="Screenshot 2026-11-08 114627" src="https://github.com/user-attachments/assets/5c129e6c-b5e7-49f9-b3c8-60d1eb16e6db" />
+)*
 
 ---
 
