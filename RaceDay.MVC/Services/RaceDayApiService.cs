@@ -596,3 +596,5 @@ public class RaceDayApiService
         } : null
     };
 }
+
+// Service updated: uses HttpRequestMessage for reliable cookie forwarding
