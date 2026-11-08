@@ -129,3 +129,5 @@ public class ParticipantController : Controller
         return View(results);
     }
 }
+
+// Participant controller: browse, enrol, results
