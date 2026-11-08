@@ -40,3 +40,5 @@ public class HomeController : Controller
 
     public IActionResult Error() => View();
 }
+
+// Home controller handles public pages
