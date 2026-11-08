@@ -148,3 +148,5 @@ public class UploadController : ControllerBase
         return Ok(new { imageUrl, message = "Profile picture updated." });
     }
 }
+
+// UploadController: event banner and profile picture endpoints
