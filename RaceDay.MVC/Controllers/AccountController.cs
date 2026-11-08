@@ -199,3 +199,5 @@ public class AccountController : Controller
             : RedirectToAction("Events", "Participant");
     }
 }
+
+// Account controller handles login, register and profile
