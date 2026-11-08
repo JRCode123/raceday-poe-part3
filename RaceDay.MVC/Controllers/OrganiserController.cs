@@ -309,3 +309,5 @@ public class OrganiserController : Controller
         return RedirectToAction("Results", new { id = eventId });
     }
 }
+
+// Organiser controller: dashboard, events, categories, results
