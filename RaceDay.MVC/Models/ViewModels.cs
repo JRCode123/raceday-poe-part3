@@ -320,3 +320,5 @@ public class OrganiserDashboardViewModel
     public List<EventListItem> UpcomingEvents { get; set; } = new();
     public List<EventListItem> AllEvents { get; set; } = new();
 }
+
+// ViewModels updated: covers all MVC pages
