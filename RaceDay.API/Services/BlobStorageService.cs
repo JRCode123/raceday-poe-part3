@@ -87,3 +87,5 @@ public class BlobStorageService
         catch (Exception ex) { _logger.LogWarning(ex, "Could not delete blob {Url}", blobUrl); }
     }
 }
+
+// BlobStorageService handles Azure uploads for the API
