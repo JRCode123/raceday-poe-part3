@@ -1,0 +1,75 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# RaceDay — GitHub Actions CI/CD Workflow (Part 3)
+# Runs on every push and pull request.
+# Builds the API (Part 2) and MVC (Part 3) and runs all unit tests.
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: RaceDay CI — Build & Test
+
+on:
+  push:
+    branches: [ "main", "master", "part2", "part3" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    name: Build API + MVC and run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the full repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Install .NET 8 SDK
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # 3. Restore NuGet packages for the API
+      - name: Restore API dependencies
+        run: dotnet restore RaceDay.API/RaceDay.API.csproj
+
+      # 4. Build the API in Release mode
+      - name: Build RaceDay API
+        run: dotnet build RaceDay.API/RaceDay.API.csproj --no-restore -c Release
+
+      # 5. Restore NuGet packages for the test project
+      - name: Restore test dependencies
+        run: dotnet restore RaceDay.Tests/RaceDay.Tests.csproj
+
+      # 6. Run all unit tests (xUnit, in-memory DB, no live SQL Server needed)
+      - name: Run Unit Tests
+        run: >
+          dotnet test RaceDay.Tests/RaceDay.Tests.csproj
+          --no-restore
+          --verbosity normal
+          --logger "trx;LogFileName=test-results.trx"
+
+      # 7. Restore NuGet packages for the MVC project
+      - name: Restore MVC dependencies
+        run: dotnet restore RaceDay.MVC/RaceDay.MVC.csproj
+
+      # 8. Build the MVC project
+      - name: Build RaceDay MVC
+        run: dotnet build RaceDay.MVC/RaceDay.MVC.csproj --no-restore -c Release
+
+      # 9. Publish test results as a workflow artifact
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: RaceDay.Tests/TestResults/test-results.trx
+
+      # 10. Verify that required folders/files exist in the repository
+      - name: Verify repository structure
+        run: |
+          echo "=== Checking required files ==="
+          test -f README.md          && echo "✅  README.md found"          || echo "❌  README.md MISSING"
+          test -d docs               && echo "✅  /docs folder found"        || echo "❌  /docs folder MISSING"
+          test -f RaceDay.MVC/Dockerfile && echo "✅  Dockerfile found"      || echo "❌  Dockerfile MISSING"
+          test -d RaceDay.API        && echo "✅  RaceDay.API folder found"  || echo "❌  RaceDay.API MISSING"
+          test -d RaceDay.MVC        && echo "✅  RaceDay.MVC folder found"  || echo "❌  RaceDay.MVC MISSING"
